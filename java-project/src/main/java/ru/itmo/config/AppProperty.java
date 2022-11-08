@@ -8,7 +8,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Getter
 @Setter
 public class AppProperty {
-    private String account;
+//    private String account;
     private String page;
     private String driverPath;
 }
