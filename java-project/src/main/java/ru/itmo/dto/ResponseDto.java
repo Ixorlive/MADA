@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ResponseDto {
     private boolean success;
-    private String name;
+    private String captchaUrl;
 }
