@@ -14,7 +14,8 @@ public class AppConfig {
     @SessionScope
     public WebDriver webDriver() {
         // да-да ебашу хардкод 🤡
-        System.setProperty("webdriver.chrome.driver","/Users/dinar/chromedriver");
+        //хардкор запрещен.
+        System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir") + "/java-project/src/main/resources/chromedriver.exe");
         WebDriver driver = new ChromeDriver();
         driver.manage().timeouts().implicitlyWait(ofSeconds(2));
         return driver;
