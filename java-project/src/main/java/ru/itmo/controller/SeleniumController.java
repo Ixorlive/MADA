@@ -2,6 +2,7 @@ package ru.itmo.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.openqa.selenium.By;
+import org.openqa.selenium.OutputType;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Select;
@@ -13,6 +14,12 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.itmo.config.AppProperty;
 import ru.itmo.dto.PersonalDataDto;
 import ru.itmo.dto.ResponseDto;
+
+
+// для теста
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 
 @RestController
 @RequestMapping("/api")
@@ -37,10 +44,11 @@ public class SeleniumController {
             idInputLc.clear();
             idInputLc.sendKeys(data.getAccount());
 
-            String src = driver.findElement(By.id("m-login-meter-captcha-image"))
-                    .getDomProperty("src");
-
-            return ResponseDto.builder().success(true).captchaUrl(src).build();
+            byte[] captcha = driver.findElement(By.id("m-login-meter-captcha-image")).getScreenshotAs(
+                    OutputType.BYTES);
+            //для теста
+//            BufferedImage img = ImageIO.read(new ByteArrayInputStream(captcha));
+            return ResponseDto.builder().success(true).captcha(captcha).build();
         } catch (Exception e) {
             return ResponseDto.builder().build();
         }
