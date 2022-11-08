@@ -9,5 +9,5 @@ uvicorn main:app --reload
 ### Requirements
 
 ```shell
-pip install fastapi "uvicorn[standard]"
+pip install -r requirements.txt
 ```
