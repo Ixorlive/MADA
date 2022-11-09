@@ -84,12 +84,22 @@ public class SeleniumController {
 
             driver.findElement(By.id("m-button-submit")).click();
             Thread.sleep(500);
-            List<String> allMeters = driver.findElements(By.tagName("td")).stream()
+            List<String> allMeters = driver.findElements(By.tagName("td"))
+                    .stream()
                     .filter(el -> el.getText().contains("Счетчик"))
-                    .map(el -> el.getText().replace("Счетчик ", "")).toList();
-            List<String> textWithDate = Arrays.stream(driver.findElements(By.tagName("i")).get(5).getText().split("период с | по | число")).toList();
-            return ResponseMeterDataDto.builder().success(true).meters(allMeters)
-                    .dateFrom(Integer.parseInt(textWithDate.get(1))).dateTo(Integer.parseInt(textWithDate.get(2))).build();
+                    .map(el -> el.getText().replace("Счетчик ", ""))
+                    .toList();
+            List<String> textWithDate = Arrays.stream(driver.findElements(By.tagName("i"))
+                    .get(5)
+                    .getText()
+                    .split("период с | по | число"))
+                    .toList();
+            return ResponseMeterDataDto.builder()
+                    .success(true)
+                    .meters(allMeters)
+                    .dateFrom(Integer.parseInt(textWithDate.get(1)))
+                    .dateTo(Integer.parseInt(textWithDate.get(2)))
+                    .build();
         } catch (Exception e) {
             return ResponseMeterDataDto.builder().build();
         }
