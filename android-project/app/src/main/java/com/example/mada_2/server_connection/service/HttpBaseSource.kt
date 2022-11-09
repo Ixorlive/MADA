@@ -8,6 +8,8 @@ import com.example.mada_2.exceptions.ConnectionException
 import com.example.mada_2.exceptions.ServerException
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.future.future
 import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
@@ -15,6 +17,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.logging.HttpLoggingInterceptor
 import java.io.IOException
 import java.time.Duration
+import java.util.concurrent.CompletableFuture
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
@@ -96,9 +99,13 @@ class HttpBaseSource private constructor() : BaseSource {
             }
     }
 
+    override fun test(): CompletableFuture<List<String>> {
+        return GlobalScope.future { getDistricts() }
+    }
+
 }
 
-private val BASE_URL = "http://127.0.0.1/api"
+private val BASE_URL = "http://10.0.2.2/api"
 private val contentType = "application/json; charset=utf-8".toMediaType()
 
 suspend fun Call.suspendEnqueue(): Response {

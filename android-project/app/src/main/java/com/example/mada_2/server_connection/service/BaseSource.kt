@@ -2,6 +2,7 @@ package com.example.mada_2.server_connection.service
 
 import com.example.mada_2.dto.ResponseDto
 import com.example.mada_2.dto.ResponseMeterDataDto
+import java.util.concurrent.CompletableFuture
 
 /*
 гайд, как вызывать suspend функции в java:
@@ -26,5 +27,7 @@ interface BaseSource {
         возвращает список районов
      */
     suspend fun getDistricts(): List<String>
+
+    fun test(): CompletableFuture<List<String>>
 
 }
