@@ -10,6 +10,8 @@ import android.preference.PreferenceManager;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
+import com.example.mada_2.ui.login.authorisation;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -20,12 +22,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+//        setContentView(R.layout.activity_main);
+        setContentView(R.layout.fragment_authorisation);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
 
-        Fragment main_camera = new main_camera();
-        getSupportFragmentManager().beginTransaction().add(R.id.fragment_container,
-                main_camera).commit();
+//        Fragment main_camera = new authorisation();
+//        getSupportFragmentManager().beginTransaction().add(R.id.fragment_container,
+//                main_camera).commit();
     }
 
 }
