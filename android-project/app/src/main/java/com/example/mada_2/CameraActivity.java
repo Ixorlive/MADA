@@ -74,7 +74,6 @@ public class CameraActivity extends AppCompatActivity {
                 new ImageCapture.OnImageSavedCallback() {
                     @Override
                     public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
-                        String path = getOutputDir().getAbsolutePath();
                         Log.d("PhotoDebug", "OutputDir: " + getOutputDir().getAbsolutePath());
                         Log.d("PhotoDebug", "Photo was created");
                     }
@@ -83,6 +82,7 @@ public class CameraActivity extends AppCompatActivity {
                         exception.printStackTrace();
                     }
                 });
+        finishActivity();
     }
 
     private void bindImageAnalysis(@NonNull ProcessCameraProvider cameraProvider) {
@@ -104,7 +104,7 @@ public class CameraActivity extends AppCompatActivity {
         return getFilesDir();
     }
 
-    private void FinishActivity() {
+    private void finishActivity() {
         Intent intent = getIntent();
         int id = intent.getIntExtra("id", 1);
         intent.putExtra("meter", "1234567");

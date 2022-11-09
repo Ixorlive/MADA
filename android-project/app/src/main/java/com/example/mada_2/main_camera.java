@@ -43,6 +43,7 @@ public class main_camera extends Fragment {
     Server server;
 
     private Spinner accounts_list;
+
     // TODO:
     private void initSpinner() {
         SharedPreferences getPrefs = PreferenceManager
@@ -69,6 +70,20 @@ public class main_camera extends Fragment {
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             accounts_list.setAdapter(adapter);
         }
+        accounts_list.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
+            {
+                String person_account = parent.getItemAtPosition(position).toString(); //selected item
+                List<Meter> meters_list_new = server.getMeters(person_account, "123");
+                MeterAdapter adapter = (MeterAdapter) recyclerView.getAdapter();
+                assert adapter != null;
+                adapter.updateAllData(meters_list_new);
+            }
+            public void onNothingSelected(AdapterView<?> parent)
+            {
+
+            }
+        });
     }
 
     public main_camera() {
@@ -104,8 +119,8 @@ public class main_camera extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_main_camera, container, false);
-        Button camera = view.findViewById(R.id.btn_send);
-        camera.setOnClickListener(view1 -> {
+        Button btn_camera = view.findViewById(R.id.btn_send);
+        btn_camera.setOnClickListener(view1 -> {
             if (hasCameraPermission()){
                 enableCamera();
             }else {
@@ -115,21 +130,7 @@ public class main_camera extends Fragment {
 
         accounts_list = view.findViewById(R.id.accounts_list);
         initSpinner();
-        accounts_list.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
-            {
-                String person_account = parent.getItemAtPosition(position).toString(); //selected item
-                List<Meter> meters_list_new = server.getMeters(person_account, "123");
-                MeterAdapter adapter = (MeterAdapter) recyclerView.getAdapter();
-                assert adapter != null;
-                adapter.updateAllData(meters_list_new);
-                adapter.notifyDataSetChanged();
-            }
-            public void onNothingSelected(AdapterView<?> parent)
-            {
 
-            }
-        });
 
         recyclerView = view.findViewById(R.id.recycler_meters);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -141,12 +142,12 @@ public class main_camera extends Fragment {
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
                     if (result.getResultCode() == Activity.RESULT_OK) {
-                        // There are no request codes
                         Intent data = result.getData();
                         assert data != null;
                         int id = data.getIntExtra("id", 0);
                         String decimals = data.getStringExtra("meter");
                         MeterAdapter adapter = (MeterAdapter) recyclerView.getAdapter();
+                        assert adapter != null;
                         adapter.updateData(id, decimals);
                     }
                 });

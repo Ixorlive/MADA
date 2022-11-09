@@ -10,4 +10,5 @@
     <string name="meter_reading_sample">12345678</string>
     <string name="enable_camera">enable camera</string>
     <string name="add">Добавить</string>
+    <string name="alter_account_text">Сменить лицевой счёт:</string>
 </resources>

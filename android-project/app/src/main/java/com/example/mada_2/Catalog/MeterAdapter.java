@@ -54,11 +54,15 @@ public class MeterAdapter extends RecyclerView.Adapter<MeterAdapter.MeterVH> {
     public void updateAllData(List<Meter> viewModels) {
         Meters.clear();
         Meters.addAll(viewModels);
-        //notifyDataSetChanged();
+        notifyDataSetChanged();
     }
 
-    public void updateData(int position, String data) {
-        Meters.get(position).meter_reading = data;
+    public void updateData(int id, String data) {
+        Meters.forEach((Meter meter)-> {
+            if (meter.id == id) {
+                meter.meter_reading = data;
+            }
+        });
         notifyDataSetChanged();
     }
 
