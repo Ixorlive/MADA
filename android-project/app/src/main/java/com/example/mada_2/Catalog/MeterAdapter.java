@@ -13,7 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mada_2.R;
-import com.example.mada_2.main_camera;
+import com.example.mada_2.MainFragment;
 
 import java.util.List;
 
@@ -21,13 +21,13 @@ import static com.google.android.material.color.MaterialColors.getColor;
 
 public class MeterAdapter extends RecyclerView.Adapter<MeterAdapter.MeterVH> {
 
-    main_camera fragment;
+    MainFragment fragment;
     Context mContext;
 
     public static final String TAG = "MeterAdapter";
     List<Meter> Meters;
 
-    public MeterAdapter(main_camera current_fragment, List<Meter> groupList) {
+    public MeterAdapter(MainFragment current_fragment, List<Meter> groupList) {
         this.fragment = current_fragment;
         this.Meters = groupList;
     }

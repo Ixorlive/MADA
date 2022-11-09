@@ -14,7 +14,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
 
-        Fragment main_camera = new main_camera();
+        Fragment main_camera = new MainFragment();
         getSupportFragmentManager().beginTransaction().add(R.id.fragment_container,
                 main_camera).commit();
     }
