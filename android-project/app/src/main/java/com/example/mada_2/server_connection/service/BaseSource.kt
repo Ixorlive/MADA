@@ -28,6 +28,10 @@ interface BaseSource {
      */
     suspend fun getDistricts(): List<String>
 
-    fun test(): CompletableFuture<List<String>>
+    fun getDistrictsAsync(): CompletableFuture<List<String>>
+
+    fun authorizeAsync(account: String, district: String): CompletableFuture<ResponseDto>
+
+    fun submitCaptchaAsync(value: String): CompletableFuture<ResponseMeterDataDto>
 
 }

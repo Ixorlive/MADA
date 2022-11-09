@@ -99,9 +99,12 @@ class HttpBaseSource private constructor() : BaseSource {
             }
     }
 
-    override fun test(): CompletableFuture<List<String>> {
-        return GlobalScope.future { getDistricts() }
-    }
+    override fun getDistrictsAsync() = GlobalScope.future { getDistricts() }
+
+    override fun authorizeAsync(account: String, district: String) =
+            GlobalScope.future { authorize(account = account, district = district) }
+
+    override fun submitCaptchaAsync(value: String) = GlobalScope.future { submitCaptcha(value) }
 
 }
 

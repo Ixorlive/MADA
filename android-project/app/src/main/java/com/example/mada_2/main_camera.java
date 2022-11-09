@@ -28,13 +28,10 @@ import com.example.mada_2.Catalog.Meter;
 import com.example.mada_2.Catalog.MeterAdapter;
 import com.example.mada_2.server_connection.Server;
 import com.example.mada_2.server_connection.ServerMock;
-import com.example.mada_2.server_connection.service.BaseSource;
-import com.example.mada_2.server_connection.service.HttpBaseSource;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
 
 public class main_camera extends Fragment {
 
@@ -121,11 +118,6 @@ public class main_camera extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        try {
-            List<String> strings = HttpBaseSource.Companion.getClient().test().get();
-        } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
-        }
         View view = inflater.inflate(R.layout.fragment_main_camera, container, false);
         Button btn_camera = view.findViewById(R.id.btn_send);
         btn_camera.setOnClickListener(view1 -> {
