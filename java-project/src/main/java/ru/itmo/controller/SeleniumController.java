@@ -1,6 +1,7 @@
 package ru.itmo.controller;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.WebDriver;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.itmo.config.AppProperty;
+import ru.itmo.dto.CaptchaDto;
 import ru.itmo.dto.PersonalDataDto;
 import ru.itmo.dto.ResponseDto;
 import ru.itmo.dto.ResponseMeterDataDto;
@@ -28,6 +30,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
+@Slf4j
 public class SeleniumController {
     private final AppProperty property;
     private final WebDriver driver;
@@ -54,6 +57,7 @@ public class SeleniumController {
 //            BufferedImage img = ImageIO.read(new ByteArrayInputStream(captcha));
             return ResponseDto.builder().success(true).captcha(captcha).build();
         } catch (Exception e) {
+            log.error("Error: ", e);
             return ResponseDto.builder().build();
         }
     }
@@ -70,17 +74,18 @@ public class SeleniumController {
                     .map(WebElement::getText)
                     .toList();
         } catch (Exception e) {
+            log.error("Error: ", e);
             throw new RuntimeException(e);
         }
     }
 
     @PostMapping("/captcha")
-    public ResponseMeterDataDto submitCaptcha(@RequestParam String value) {
+    public ResponseMeterDataDto submitCaptcha(CaptchaDto dto) {
         try {
             WebElement idInputCaptcha = driver.findElement(By.id("id_input_captcha"));
             idInputCaptcha.click();
             idInputCaptcha.clear();
-            idInputCaptcha.sendKeys(value);
+            idInputCaptcha.sendKeys(dto.getValue());
 
             driver.findElement(By.id("m-button-submit")).click();
             Thread.sleep(500);
@@ -101,7 +106,8 @@ public class SeleniumController {
                     .dateTo(Integer.parseInt(textWithDate.get(2)))
                     .build();
         } catch (Exception e) {
-            return ResponseMeterDataDto.builder().build();
+            log.error("Error: ", e);
+            throw new RuntimeException(e);
         }
     }
 }
