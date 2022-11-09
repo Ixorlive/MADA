@@ -60,6 +60,7 @@ public class SeleniumController {
     public List<String> getDistricts() {
         try {
             driver.get(property.getPage());
+            Thread.sleep(300);
 
             return new Select(driver.findElement(By.id("id_select_region")))
                     .getOptions()
