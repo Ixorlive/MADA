@@ -2,34 +2,32 @@ package com.example.mada_2.Catalog;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.mada_2.CameraActivity;
 import com.example.mada_2.R;
+import com.example.mada_2.main_camera;
+
 import java.util.List;
 
 import static com.google.android.material.color.MaterialColors.getColor;
 
 public class MeterAdapter extends RecyclerView.Adapter<MeterAdapter.MeterVH> {
 
-    Fragment fragment;
+    main_camera fragment;
     Context mContext;
 
     public static final String TAG = "MeterAdapter";
     List<Meter> Meters;
-    public MeterAdapter(Fragment current_fragment, List<Meter> groupList) {
+
+    public MeterAdapter(main_camera current_fragment, List<Meter> groupList) {
         this.fragment = current_fragment;
         this.Meters = groupList;
     }
@@ -53,6 +51,17 @@ public class MeterAdapter extends RecyclerView.Adapter<MeterAdapter.MeterVH> {
         return Meters.size();
     }
 
+    public void updateAllData(List<Meter> viewModels) {
+        Meters.clear();
+        Meters.addAll(viewModels);
+        //notifyDataSetChanged();
+    }
+
+    public void updateData(int position, String data) {
+        Meters.get(position).meter_reading = data;
+        notifyDataSetChanged();
+    }
+
     class MeterVH extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         TextView meter_title;
@@ -67,13 +76,12 @@ public class MeterAdapter extends RecyclerView.Adapter<MeterAdapter.MeterVH> {
             btn_camera = itemView.findViewById(R.id.btn_camera);
             itemView.setOnClickListener(this);
         }
-
         @SuppressLint({"ResourceAsColor", "RestrictedApi", "ResourceType"})
-        void bindTo(Meter currentMeter){
+        void bindTo(Meter currentMeter) {
             meter_title.setText(currentMeter.name);
+            editText.setText(currentMeter.meter_reading);
             btn_camera.setOnClickListener((View view) -> {
-                Intent intent = new Intent(fragment.getActivity(), CameraActivity.class);
-                fragment.startActivity(intent);
+                fragment.ShowCameraActivity(currentMeter.id);
             });
         }
 

@@ -1,11 +1,14 @@
 package com.example.mada_2;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -34,8 +37,10 @@ public class main_camera extends Fragment {
 
     private static final String[] CAMERA_PERMISSION = new String[]{Manifest.permission.CAMERA};
     private static final int CAMERA_REQUEST_CODE = 10;
+    ActivityResultLauncher<Intent> activityResultLauncher;
 
     RecyclerView recyclerView;
+    Server server;
 
     private Spinner accounts_list;
     // TODO:
@@ -54,10 +59,11 @@ public class main_camera extends Fragment {
             editor.apply();
         }
         else {
-            String[] arr_accounts = new String[personal_accounts.size()];
+            String[] arr_accounts = new String[personal_accounts.size() + 1];
             int index = 0;
             for (String str : personal_accounts)
                 arr_accounts[index++] = str;
+            arr_accounts[index] = getResources().getString(R.string.add);
             ArrayAdapter<String> adapter = new ArrayAdapter<>(this.getContext(),
                     android.R.layout.simple_list_item_1, arr_accounts);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -67,6 +73,12 @@ public class main_camera extends Fragment {
 
     public main_camera() {
         // Required empty public constructor
+    }
+
+    public void ShowCameraActivity(int id) {
+        Intent intent = new Intent(getActivity(), CameraActivity.class);
+        intent.putExtra("id", id);
+        activityResultLauncher.launch(intent);
     }
 
     public static main_camera newInstance(String param1, String param2) {
@@ -92,7 +104,6 @@ public class main_camera extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_main_camera, container, false);
-
         Button camera = view.findViewById(R.id.btn_send);
         camera.setOnClickListener(view1 -> {
             if (hasCameraPermission()){
@@ -104,23 +115,42 @@ public class main_camera extends Fragment {
 
         accounts_list = view.findViewById(R.id.accounts_list);
         initSpinner();
-//        accounts_list.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//            public void onItemSelected(AdapterView<String> parent, View view, int position, long id)
-//            {
-//                String person_account = parent.getItemAtPosition(position).toString(); //selected item
-//
-//            }
-//            public void onNothingSelected(AdapterView<?> parent)
-//            {
-//
-//            }
-//        });
+        accounts_list.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
+            {
+                String person_account = parent.getItemAtPosition(position).toString(); //selected item
+                List<Meter> meters_list_new = server.getMeters(person_account, "123");
+                MeterAdapter adapter = (MeterAdapter) recyclerView.getAdapter();
+                assert adapter != null;
+                adapter.updateAllData(meters_list_new);
+                adapter.notifyDataSetChanged();
+            }
+            public void onNothingSelected(AdapterView<?> parent)
+            {
+
+            }
+        });
 
         recyclerView = view.findViewById(R.id.recycler_meters);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        Server server = new ServerMock();
+        server = new ServerMock();
         List<Meter> meters_list = server.getMeters("123456", "Выксунский район");
         initRecyclerView(meters_list);
+
+        activityResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        // There are no request codes
+                        Intent data = result.getData();
+                        assert data != null;
+                        int id = data.getIntExtra("id", 0);
+                        String decimals = data.getStringExtra("meter");
+                        MeterAdapter adapter = (MeterAdapter) recyclerView.getAdapter();
+                        adapter.updateData(id, decimals);
+                    }
+                });
+
         return view;
     }
 

@@ -9,4 +9,5 @@
     <string name="meter_name_sample">Холодная вода 1</string>
     <string name="meter_reading_sample">12345678</string>
     <string name="enable_camera">enable camera</string>
+    <string name="add">Добавить</string>
 </resources>
