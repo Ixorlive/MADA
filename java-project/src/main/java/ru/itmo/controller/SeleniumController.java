@@ -15,12 +15,14 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.itmo.config.AppProperty;
 import ru.itmo.dto.PersonalDataDto;
 import ru.itmo.dto.ResponseDto;
+import ru.itmo.dto.ResponseMeterDataDto;
 
 
 // для теста
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -73,7 +75,7 @@ public class SeleniumController {
     }
 
     @PostMapping("/captcha")
-    public ResponseDto submitCaptcha(@RequestParam String value) {
+    public ResponseMeterDataDto submitCaptcha(@RequestParam String value) {
         try {
             WebElement idInputCaptcha = driver.findElement(By.id("id_input_captcha"));
             idInputCaptcha.click();
@@ -82,10 +84,14 @@ public class SeleniumController {
 
             driver.findElement(By.id("m-button-submit")).click();
             Thread.sleep(500);
-
-            return ResponseDto.builder().success(true).build();
+            List<String> allMeters = driver.findElements(By.tagName("td")).stream()
+                    .filter(el -> el.getText().contains("Счетчик"))
+                    .map(el -> el.getText().replace("Счетчик ", "")).toList();
+            List<String> textWithDate = Arrays.stream(driver.findElements(By.tagName("i")).get(5).getText().split("период с | по | число")).toList();
+            return ResponseMeterDataDto.builder().success(true).meters(allMeters)
+                    .dateFrom(Integer.parseInt(textWithDate.get(1))).dateTo(Integer.parseInt(textWithDate.get(2))).build();
         } catch (Exception e) {
-            return ResponseDto.builder().build();
+            return ResponseMeterDataDto.builder().build();
         }
     }
 }
