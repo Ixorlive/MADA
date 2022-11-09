@@ -14,6 +14,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.logging.HttpLoggingInterceptor
 import java.io.IOException
+import java.time.Duration
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
@@ -76,7 +77,9 @@ class HttpBaseSource private constructor() : BaseSource {
     private fun buildClient(): OkHttpClient {
         return OkHttpClient.Builder().addInterceptor(
                 HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
-        ).build()
+        )
+                .connectTimeout(Duration.ofSeconds(30))
+                .build()
     }
 
     companion object {
