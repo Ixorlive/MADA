@@ -2,6 +2,8 @@ package com.example.mada_2.Catalog;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -71,6 +73,7 @@ public class MeterAdapter extends RecyclerView.Adapter<MeterAdapter.MeterVH> {
         TextView meter_title;
         EditText editText;
         ImageView btn_camera;
+        ImageView img_warning;
 
         public MeterVH(@NonNull final View itemView) {
             super(itemView);
@@ -78,12 +81,31 @@ public class MeterAdapter extends RecyclerView.Adapter<MeterAdapter.MeterVH> {
             meter_title = itemView.findViewById(R.id.text_meter_name);
             editText = itemView.findViewById(R.id.text_meter_reading);
             btn_camera = itemView.findViewById(R.id.btn_camera);
+            img_warning = itemView.findViewById(R.id.img_warning);
+            editText.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    // TODO: check correction of input
+                    if (s.length() <= 6) {
+                        img_warning.setVisibility(View.VISIBLE);
+                    } else {
+                        img_warning.setVisibility(View.INVISIBLE);
+                    }
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {}
+            });
             itemView.setOnClickListener(this);
         }
         @SuppressLint({"ResourceAsColor", "RestrictedApi", "ResourceType"})
         void bindTo(Meter currentMeter) {
             meter_title.setText(currentMeter.name);
             editText.setText(currentMeter.meter_reading);
+
             btn_camera.setOnClickListener((View view) -> {
                 fragment.ShowCameraActivity(currentMeter.id);
             });

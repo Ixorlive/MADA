@@ -14,12 +14,15 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 
 import com.example.mada_2.Catalog.Meter;
@@ -37,6 +40,8 @@ public class MainFragment extends Fragment {
     ActivityResultLauncher<Intent> activityResultLauncher;
     private Spinner accounts_list;
     RecyclerView recyclerView;
+    ProgressBar progressBar;
+    Button sendButton;
     Server server;
 
     public MainFragment() {
@@ -64,6 +69,13 @@ public class MainFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         accounts_list = view.findViewById(R.id.accounts_list);
         recyclerView = view.findViewById(R.id.recycler_meters);
+        sendButton = view.findViewById(R.id.btn_send);
+        progressBar = view.findViewById(R.id.progressBar);
+        sendButton.setOnClickListener((View v) -> {
+            startProgressBar();
+            (new Handler()).postDelayed(this::dataSent, 1500);
+            // TODO: send data;
+        });
         initSpinner();
         initRecyclerView();
         initActivityResultLauncher();
@@ -133,5 +145,15 @@ public class MainFragment extends Fragment {
                 CAMERA_PERMISSION,
                 CAMERA_REQUEST_CODE
         );
+    }
+
+    private void dataSent() {
+        // TODO: show fragment or text
+        progressBar.setVisibility(View.INVISIBLE);
+        sendButton.setText("Отправлено!");
+    }
+
+    private void startProgressBar() {
+        progressBar.setVisibility(View.VISIBLE);
     }
 }
