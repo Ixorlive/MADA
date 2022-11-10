@@ -10,6 +10,7 @@ import android.preference.PreferenceManager;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
+import com.example.mada_2.database.DBWorker;
 import com.example.mada_2.server_connection.service.HttpBaseSource;
 import com.example.mada_2.ui.login.authorisation;
 
@@ -24,13 +25,24 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Создание БД
+        DBWorker dataBaseWorker = new DBWorker(MainActivity.this);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
 
-        Fragment auth = new MainFragment();//new authorisation();
+        Fragment main = null;
+        if(dataBaseWorker.isDbEmpty())
+        {
+            main = new authorisation();
+        }
+        else
+        {
+            main = new MainFragment();
+        }
         getSupportFragmentManager().beginTransaction().add(R.id.fragment_container,
-                auth).commit();
+                main).commit();
     }
 
 }

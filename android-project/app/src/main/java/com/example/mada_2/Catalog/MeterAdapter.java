@@ -50,7 +50,10 @@ public class MeterAdapter extends RecyclerView.Adapter<MeterAdapter.MeterVH> {
 
     @Override
     public int getItemCount() {
-        return Meters.size();
+        if (Meters != null)
+            return Meters.size();
+        else
+            return 0;
     }
 
     public void updateAllData(List<Meter> viewModels) {

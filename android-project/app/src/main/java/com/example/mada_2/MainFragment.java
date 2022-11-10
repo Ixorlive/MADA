@@ -29,6 +29,8 @@ import android.widget.Spinner;
 
 import com.example.mada_2.Catalog.Meter;
 import com.example.mada_2.Catalog.MeterAdapter;
+import com.example.mada_2.database.DBWorker;
+import com.example.mada_2.database.User;
 import com.example.mada_2.server_connection.Server;
 import com.example.mada_2.server_connection.ServerMock;
 
@@ -49,12 +51,13 @@ public class MainFragment extends Fragment {
     Button sendButton;
     Server server;
     List<Meter> meters = null;
+    User user = null;
 
     public MainFragment() {
         // Required empty public constructor
     }
 
-    public MainFragment(List<String> list) {
+    public MainFragment(List<String> list, User user) {
         int i = 1;
         meters = new ArrayList<>();
         for(String l: list)
@@ -62,6 +65,7 @@ public class MainFragment extends Fragment {
             meters.add(new Meter(i, l, ""));
             i++;
         }
+        this.user = user;
     }
 
     public void ShowCameraActivity(int id) {
@@ -95,7 +99,14 @@ public class MainFragment extends Fragment {
         initSpinner();
         initRecyclerView();
         initActivityResultLauncher();
-
+        if(meters != null)
+        {
+            DBWorker dbWorker = new DBWorker(getContext());
+            for (Meter m: meters)
+            {
+                dbWorker.addMeter(user, m);
+            }
+        }
         return view;
     }
 
