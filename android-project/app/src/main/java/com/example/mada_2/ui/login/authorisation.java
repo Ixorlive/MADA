@@ -8,17 +8,22 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 
 import com.example.mada_2.R;
+import com.example.mada_2.server_connection.service.HttpBaseSource;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class authorisation extends Fragment {
 
@@ -44,20 +49,28 @@ public class authorisation extends Fragment {
         spinner.setAdapter(adapter);
         Button button = view.findViewById(R.id.login);
         button.setOnClickListener(v -> {
-            Dialog d = createDialog();
-            d.show();
-//            HttpBaseSource.Companion.getClient().authorizeAsync(view.findViewById(R.id.area).getText(), view.findViewById(R.id.password).getText());
+            EditText password = view.findViewById(R.id.password);
+            Spinner area = view.findViewById(R.id.area);
+            byte[] captch;
+            try {
+                captch = HttpBaseSource.Companion.getClient().authorizeAsync(password.getText().toString(), area.getSelectedItem().toString()).get().getCaptcha();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         });
         return view;
     }
 
-    public Dialog createDialog() {
+    public Dialog createDialog(Bitmap bitmap) {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
         // Get the layout inflater
         LayoutInflater inflater = requireActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.dialog_captcha, null);
-//        ImageView a = view.findViewById(R.id.img_captcha);
-        //a.setBackground(getResources().getDrawable(R.drawable.buttons_gradient));
+        ImageView cp = view.findViewById(R.id.img_captcha);
+//        view.setBackground(captcha.getBackground());
+//        a.setBackground(getResources().getDrawable(R.drawable.buttons_gradient));
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
         builder.setView(view)
