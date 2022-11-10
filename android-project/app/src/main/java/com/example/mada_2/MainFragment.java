@@ -3,6 +3,7 @@ package com.example.mada_2;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 
@@ -15,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,8 +32,10 @@ import com.example.mada_2.Catalog.MeterAdapter;
 import com.example.mada_2.server_connection.Server;
 import com.example.mada_2.server_connection.ServerMock;
 
+import java.util.HashSet;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class MainFragment extends Fragment {
 
@@ -96,21 +100,27 @@ public class MainFragment extends Fragment {
     }
 
     private void initSpinner() {
-//        SharedPreferences getPrefs = PreferenceManager
-//                .getDefaultSharedPreferences(this.getContext());
-//        Set<String> personal_accounts = getPrefs.getStringSet("Accounts", null);
-        String[] strings = {"12345678", "543", "Добавить"};
+        SharedPreferences getPrefs = PreferenceManager
+                .getDefaultSharedPreferences(this.getContext());
+        Set<String> personal_accounts = getPrefs.getStringSet("Accounts", new HashSet<>());
+        String[] strings = new String[personal_accounts.size() + 1];
+        int index = 0;
+        for (String str : personal_accounts) {
+            strings[index++] = str;
+        }
+        strings[index] = "Добавить";
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this.getContext(),
                 android.R.layout.simple_list_item_1, strings);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         accounts_list.setAdapter(adapter);
         accounts_list.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String person_account = parent.getItemAtPosition(position).toString(); //selected item
-                List<Meter> meters_list_new = server.getMeters(person_account, "123");
-                MeterAdapter adapter = (MeterAdapter) recyclerView.getAdapter();
-                assert adapter != null;
-                adapter.updateAllData(meters_list_new);
+                //TODO: create database ?
+//                String person_account = parent.getItemAtPosition(position).toString(); //selected item
+//                List<Meter> meters_list_new = server.getMeters(person_account, "123");
+//                MeterAdapter adapter = (MeterAdapter) recyclerView.getAdapter();
+//                assert adapter != null;
+//                adapter.updateAllData(meters_list_new);
             }
 
             public void onNothingSelected(AdapterView<?> parent) {
