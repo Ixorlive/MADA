@@ -8,10 +8,12 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,7 +29,10 @@ import com.example.mada_2.dto.ResponseMeterDataDto;
 import com.example.mada_2.server_connection.service.HttpBaseSource;
 
 import java.util.Base64;
+import java.util.BitSet;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 public class authorisation extends Fragment {
@@ -119,5 +124,16 @@ public class authorisation extends Fragment {
                 });
 
         return builder.create();
+    }
+
+    public void saveAccount(String account) {
+        SharedPreferences getPrefs = PreferenceManager
+                .getDefaultSharedPreferences(this.getContext());
+        Set<String> personal_accounts = getPrefs.getStringSet("Accounts", new HashSet<>());
+        Set<String> arr_accounts = new HashSet<>(personal_accounts);
+        arr_accounts.add(account);
+        SharedPreferences.Editor editor = getPrefs.edit();
+        editor.putStringSet("Accounts", arr_accounts);
+        editor.apply();
     }
 }
