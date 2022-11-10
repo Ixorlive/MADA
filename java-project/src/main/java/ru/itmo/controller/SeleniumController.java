@@ -82,7 +82,7 @@ public class SeleniumController {
     }
 
     @PostMapping("/captcha")
-    public ResponseMeterDataDto submitCaptcha(CaptchaDto dto) {
+    public ResponseMeterDataDto submitCaptcha(@RequestBody CaptchaDto dto) {
         try {
             WebElement idInputCaptcha = driver.findElement(By.id("id_input_captcha"));
             idInputCaptcha.click();

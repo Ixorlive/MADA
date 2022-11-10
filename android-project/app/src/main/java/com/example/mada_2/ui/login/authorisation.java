@@ -11,6 +11,7 @@ import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 
 import com.example.mada_2.R;
+import com.example.mada_2.dto.ResponseMeterDataDto;
 import com.example.mada_2.server_connection.service.HttpBaseSource;
 
 import java.util.Base64;
@@ -76,12 +78,20 @@ public class authorisation extends Fragment {
         LayoutInflater inflater = requireActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.dialog_captcha, null);
         ImageView v = view.findViewById(R.id.img_captcha);
+        EditText mEdit = view.findViewById(R.id.text_captcha);
         v.setImageBitmap(map);
         builder.setView(view)
                 // Add action buttons
                 .setPositiveButton("enter", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
+                        String value = mEdit.getText().toString();
+                        try {
+                            ResponseMeterDataDto responseMeterDataDto = HttpBaseSource.Companion.getClient().submitCaptchaAsync(value).get();
+                            Log.d("SubmitCaptcha", responseMeterDataDto.toString());
+                        } catch (ExecutionException | InterruptedException e) {
+                            e.printStackTrace();
+                        }
                         // sign in the user ...
                     }
                 })
