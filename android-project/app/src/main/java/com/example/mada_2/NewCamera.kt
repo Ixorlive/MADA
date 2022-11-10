@@ -8,6 +8,8 @@ import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
+import android.view.View
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.CameraSelector
@@ -269,7 +271,7 @@ class NewCamera : AppCompatActivity() {
                 }.toTypedArray()
     }
 
-    fun getPrediction(name: String): String {
+    fun getPrediction(name: String) {
         Log.d("MLDebug", "start getPrediction")
         val client = OkHttpClient().newBuilder()
                 .build()
@@ -314,7 +316,6 @@ class NewCamera : AppCompatActivity() {
             }
         });
         Log.d("MLDebug", "end getPrediction")
-        //return response.body!!.string()
-        return "2"
+        findViewById<ProgressBar>(R.id.progressBar).visibility = View.VISIBLE;
     }
 }

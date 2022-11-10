@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
 
-        Fragment auth = new authorisation();
+        Fragment auth = new MainFragment();//new authorisation();
         getSupportFragmentManager().beginTransaction().add(R.id.fragment_container,
                 auth).commit();
     }
