@@ -26,17 +26,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-//        setContentView(R.layout.fragment_authorisation);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
-        List<String> dist = null;
-        try {
-            dist = HttpBaseSource.Companion.getClient().getDistrictsAsync().get();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        Fragment auth = new authorisation(dist);
+
+        Fragment auth = new authorisation();
         getSupportFragmentManager().beginTransaction().add(R.id.fragment_container,
                 auth).commit();
     }

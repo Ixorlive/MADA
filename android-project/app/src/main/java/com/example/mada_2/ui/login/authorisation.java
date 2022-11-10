@@ -32,13 +32,6 @@ import java.util.concurrent.ExecutionException;
 
 public class authorisation extends Fragment {
 
-
-    List<String> dist = null;
-
-    public authorisation(List<String> dist) {
-        this.dist = dist;
-    }
-
     @SuppressLint("MissingInflatedId")
     @Nullable
     @Override
@@ -47,7 +40,17 @@ public class authorisation extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_authorisation, container, false);
         Spinner spinner = view.findViewById(R.id.area);
-
+        List<String> dist = null;
+        try {
+            dist = HttpBaseSource.Companion
+                    .getClient()
+                    .getDistrictsAsync()
+                    .get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this.getContext(),
                 android.R.layout.simple_list_item_1, dist);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
