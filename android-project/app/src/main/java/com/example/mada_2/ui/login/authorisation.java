@@ -12,8 +12,8 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.util.Log;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,16 +23,18 @@ import android.widget.ImageView;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import com.example.mada_2.Catalog.Meter;
 import com.example.mada_2.MainFragment;
 import com.example.mada_2.R;
 import com.example.mada_2.dto.ResponseMeterDataDto;
 import com.example.mada_2.server_connection.service.HttpBaseSource;
 
 import java.util.Base64;
-import java.util.BitSet;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Stack;
 import java.util.concurrent.ExecutionException;
 
 public class authorisation extends Fragment {
@@ -65,10 +67,11 @@ public class authorisation extends Fragment {
             Bitmap bitmap = null;
             EditText password = view.findViewById(R.id.password);
             try {
-                String bb = HttpBaseSource.Companion.getClient()
-                        .authorizeAsync(password.getText().toString(),
-                                spinner.getSelectedItem().toString())
-                        .get().getCaptchaBase64();
+//                String bb = HttpBaseSource.Companion.getClient()
+//                        .authorizeAsync(password.getText().toString(),
+//                                spinner.getSelectedItem().toString())
+//                        .get().getCaptchaBase64();
+                String bb = HttpBaseSource.Companion.getClient().authorizeAsync("3403454", "Выксунский р-н").get().getCaptchaBase64();
                 byte[] b = Base64.getDecoder().decode(bb);
                 bitmap = BitmapFactory.decodeByteArray(b, 0, b.length);
             } catch (ExecutionException e) {
@@ -106,7 +109,8 @@ public class authorisation extends Fragment {
                             Log.d("SubmitCaptcha", responseMeterDataDto.toString());
                             if(responseMeterDataDto.component1())
                             {
-                                Fragment mainFragment = new MainFragment();
+                                saveAccount("3403454");
+                                Fragment mainFragment = new MainFragment(responseMeterDataDto.getMeters());
                                 getActivity().getSupportFragmentManager()
                                         .beginTransaction()
                                         .add(R.id.fragment_container, mainFragment)

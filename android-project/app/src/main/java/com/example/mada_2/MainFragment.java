@@ -30,6 +30,7 @@ import com.example.mada_2.Catalog.MeterAdapter;
 import com.example.mada_2.server_connection.Server;
 import com.example.mada_2.server_connection.ServerMock;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainFragment extends Fragment {
@@ -43,9 +44,20 @@ public class MainFragment extends Fragment {
     ProgressBar progressBar;
     Button sendButton;
     Server server;
+    List<Meter> meters = null;
 
     public MainFragment() {
         // Required empty public constructor
+    }
+
+    public MainFragment(List<String> list) {
+        int i = 1;
+        meters = new ArrayList<>();
+        for(String l: list)
+        {
+            meters.add(new Meter(i, l, ""));
+            i++;
+        }
     }
 
     public void ShowCameraActivity(int id) {
@@ -110,8 +122,8 @@ public class MainFragment extends Fragment {
     private void initRecyclerView() {
         server = new ServerMock();
         // TODO: get from local data ?
-        List<Meter> meters_list = server.getMeters("123456", "Выксунский район");
-        MeterAdapter groupAdapter = new MeterAdapter(this, meters_list);
+//        List<Meter> meters_list = server.getMeters("123456", "Выксунский район");
+        MeterAdapter groupAdapter = new MeterAdapter(this, meters);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(groupAdapter);
     }
