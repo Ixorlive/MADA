@@ -9,19 +9,23 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.EditText;
 import android.widget.Spinner;
 
 import com.example.mada_2.R;
 import com.example.mada_2.server_connection.service.HttpBaseSource;
+import com.example.mada_2.server_connection.service.HttpBaseSource;
 
+import java.util.BitSet;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -49,30 +53,31 @@ public class authorisation extends Fragment {
         spinner.setAdapter(adapter);
         Button button = view.findViewById(R.id.login);
         button.setOnClickListener(v -> {
+            Bitmap bitmap = null;
             EditText password = view.findViewById(R.id.password);
-            Spinner area = view.findViewById(R.id.area);
-            byte[] captch;
             try {
-                captch = HttpBaseSource.Companion.getClient().authorizeAsync(password.getText().toString(), area.getSelectedItem().toString()).get().getCaptcha();
+                //captch = HttpBaseSource.Companion.getClient().authorizeAsync(password.getText().toString(), area.getSelectedItem().toString()).get().getCaptcha();
+                byte[] b = HttpBaseSource.Companion.getClient().authorizeAsync("3403454", "Выксунский р-н").get().getCaptcha();
+                bitmap = BitmapFactory.decodeByteArray(b, 0, b.length);
             } catch (ExecutionException e) {
                 e.printStackTrace();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            Dialog d = createDialog(bitmap);
+            d.show();
         });
         return view;
     }
 
-    public Dialog createDialog(Bitmap bitmap) {
+    public Dialog createDialog(Bitmap map) {
+        assert map != null;
         AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
         // Get the layout inflater
         LayoutInflater inflater = requireActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.dialog_captcha, null);
-        ImageView cp = view.findViewById(R.id.img_captcha);
-//        view.setBackground(captcha.getBackground());
-//        a.setBackground(getResources().getDrawable(R.drawable.buttons_gradient));
-        // Inflate and set the layout for the dialog
-        // Pass null as the parent view because its going in the dialog layout
+        ImageView v = view.findViewById(R.id.img_captcha);
+        v.setImageBitmap(map);
         builder.setView(view)
                 // Add action buttons
                 .setPositiveButton("enter", new DialogInterface.OnClickListener() {
