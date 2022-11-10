@@ -5,6 +5,7 @@ import android.content.ContentValues
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import android.widget.Toast
@@ -20,7 +21,10 @@ import androidx.camera.video.VideoCapture
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.mada_2.databinding.ActivityNewCameraBinding
-import com.example.mada_2.server_connection.ML
+import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaType
+import java.io.File
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.ExecutorService
@@ -41,7 +45,11 @@ class NewCamera : AppCompatActivity() {
     private lateinit var cameraExecutor: ExecutorService
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Log.d(TAG, "start onCreate")
         super.onCreate(savedInstanceState)
+        isCameraPermissionGranted()
+        isWriteStoragePermissionGranted()
+        isReadStoragePermissionGranted()
         setContentView(R.layout.activity_new_camera)
         viewBinding = ActivityNewCameraBinding.inflate(layoutInflater)
         setContentView(viewBinding.root)
@@ -63,6 +71,7 @@ class NewCamera : AppCompatActivity() {
 
     private fun takePhoto() {
         // Get a stable reference of the modifiable image capture use case
+        Log.d(TAG, "start takePhoto")
         val imageCapture = imageCapture ?: return
 
         // Create time stamped name and MediaStore entry.
@@ -71,7 +80,7 @@ class NewCamera : AppCompatActivity() {
         val contentValues = ContentValues().apply {
             put(MediaStore.MediaColumns.DISPLAY_NAME, name)
             put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
-            if(Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
                 put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/CameraX-Image")
             }
         }
@@ -82,6 +91,8 @@ class NewCamera : AppCompatActivity() {
                         MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                         contentValues)
                 .build()
+        val activity = this
+        //ImageCapture.OutputFileOptions.Builder(File("/image.jpg")).build()
 
         // Set up image capture listener, which is triggered after photo has
         // been taken
@@ -94,18 +105,21 @@ class NewCamera : AppCompatActivity() {
                     }
 
                     override fun
-                            onImageSaved(output: ImageCapture.OutputFileResults){
+                            onImageSaved(output: ImageCapture.OutputFileResults) {
                         val msg = "Photo capture succeeded: ${output.savedUri}"
                         Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
                         Log.d(TAG, msg)
-                        val result : String = ML.getPrediction(output.savedUri)
-                        finishActivity(result)
+                        Log.d("MLDebug", "before ML")
+                        //val result : String = ML().getPrediction(name, activity) //output.savedUri!!)
+                        getPrediction(name)
+                        Log.d("MLDebug", "after ML")
+                        //finishActivity(result)
                     }
                 }
         )
     }
 
-    private fun finishActivity(String result) {
+    private fun finishActivity(result: String) {
         val intent = intent
         val id = intent.getIntExtra("id", 1)
         intent.putExtra("meter", result)
@@ -142,7 +156,7 @@ class NewCamera : AppCompatActivity() {
                 // Bind use cases to camera
                 cameraProvider.bindToLifecycle(
                         this, cameraSelector, preview, imageCapture)
-            } catch(exc: Exception) {
+            } catch (exc: Exception) {
                 Log.e(TAG, "Use case binding failed", exc)
             }
 
@@ -175,12 +189,77 @@ class NewCamera : AppCompatActivity() {
         }
     }
 
+    fun isWriteStoragePermissionGranted(): Boolean {
+        //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        return if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED
+        ) {
+            Log.v("PhotoDebug", "Permission is granted")
+            true
+        } else {
+            Log.v("PhotoDebug", "Permission is revoked")
+            ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                    1
+            )
+            false
+        }
+        /*}
+        else { //permission is automatically granted on sdk<23 upon installation
+            Log.v("PhotoDebug","Permission is granted");
+            return true;
+        }*/
+    }
+
+    fun isReadStoragePermissionGranted(): Boolean {
+        //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        return if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED
+        ) {
+            Log.v("PhotoDebug", "Permission is granted")
+            true
+        } else {
+            Log.v("PhotoDebug", "Permission is revoked")
+            ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                    1
+            )
+            false
+        }
+        /*}
+        else { //permission is automatically granted on sdk<23 upon installation
+            Log.v("PhotoDebug","Permission is granted");
+            return true;
+        }*/
+    }
+
+    fun isCameraPermissionGranted(): Boolean {
+        //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        return if (checkSelfPermission(Manifest.permission.CAMERA)
+                == PackageManager.PERMISSION_GRANTED
+        ) {
+            Log.v("PhotoDebug", "Permission is granted")
+            true
+        } else {
+            Log.v("PhotoDebug", "Permission is revoked")
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), 1)
+            false
+        }
+        /*}
+        else { //permission is automatically granted on sdk<23 upon installation
+            Log.v("PhotoDebug","Permission is granted");
+            return true;
+        }*/
+    }
+
     companion object {
         private const val TAG = "PhotoDebug"
         private const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
         private const val REQUEST_CODE_PERMISSIONS = 10
         private val REQUIRED_PERMISSIONS =
-                mutableListOf (
+                mutableListOf(
                         Manifest.permission.CAMERA/*,
                         Manifest.permission.RECORD_AUDIO*/
                 ).apply {
@@ -188,5 +267,54 @@ class NewCamera : AppCompatActivity() {
                         add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     }
                 }.toTypedArray()
+    }
+
+    fun getPrediction(name: String): String {
+        Log.d("MLDebug", "start getPrediction")
+        val client = OkHttpClient().newBuilder()
+                .build()
+        Log.d("MLDebug", "in getPrediction: 1")
+        val mediaType: MediaType = "text/plain".toMediaType()
+        Log.d("MLDebug", "in getPrediction: 2")
+        //val data = File(imageUri.path!!)
+        val data = File(Environment.getExternalStorageDirectory().absoluteFile,
+                "Pictures/CameraX-Image/" + name + ".jpg");
+        //val data = File("/storage/emulated/0/Pictures/CameraX-Image/1.jpg")
+
+        Log.d("MLDebug", "in getPrediction: 2.5")
+        val body: RequestBody = MultipartBody.Builder().setType(MultipartBody.FORM)
+                .addFormDataPart(
+                        "file", "${name}.jpg",
+                        RequestBody.create(
+                                "application/octet-stream".toMediaType(),
+                                data
+                        )
+                )
+                .build()
+
+        Log.d("MLDebug", "in getPrediction: 3")
+        val request: Request = Request.Builder()
+                //.url("http://10.171.75.90:8000/")
+                .url("http://10.171.75.90:8000/recognize_meters_data")
+                .method("POST", body)
+                .build()
+        Log.d("MLDebug", "in getPrediction: 4")
+        //val response = client.newCall(request).execute()
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                Log.d("MLDebug", "Exception: " + e)
+                call.cancel()
+                finishActivity("0000000")
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                val str: String = response.body!!.string()
+                Log.d("MLDebug", str)
+                finishActivity(str)
+            }
+        });
+        Log.d("MLDebug", "end getPrediction")
+        //return response.body!!.string()
+        return "2"
     }
 }
