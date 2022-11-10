@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">mada_2</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="btn_open_camera">Передать</string>
+    <string name="send">Подать</string>
+    <string name="enter">Войти</string>
+
+    <string name="meter_name_sample">Холодная вода 1</string>
+    <string name="meter_reading_sample">12345678</string>
+    <string name="enable_camera">enable camera</string>
+    <string name="add">Добавить</string>
+    <string name="alter_account_text">Сменить лицевой счёт:</string>
+
+    <string name="prompt_password">Лицевой счёт</string>
+    <string name="action_sign_in">Войти</string>
+    <string name="welcome_text">Приветствуем Вас в приложении MADA!</string>
+    <string name="select_area">Выберите территорию:</string>
+</resources>
