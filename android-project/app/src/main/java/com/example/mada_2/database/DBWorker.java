@@ -10,6 +10,9 @@ import androidx.annotation.Nullable;
 
 import com.example.mada_2.Catalog.Meter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DBWorker extends SQLiteOpenHelper {
 
     public static final String DB_NAME = "madaDB.db";
@@ -19,6 +22,7 @@ public class DBWorker extends SQLiteOpenHelper {
     public static final String COLUMN_PASSWORD = "password";
 
     public static final String METERS = "METERS";
+    public static final String ID = "id";
     public static final String ID_USER = "id_user";
     public static final String NAME = "meter_name";
     public static final String OLD_STATEMENT = "old_statement";
@@ -38,7 +42,8 @@ public class DBWorker extends SQLiteOpenHelper {
 
         //таблица счетчиков
         String createMetersTable = "CREATE TABLE " + METERS
-                + " (" + ID_USER + " TEXT NOT NULL, "
+                + " (" + ID + " INT NOT NULL, "
+                + ID_USER + " TEXT NOT NULL, "
                 + NAME + " TEXT NOT NULL, "
                 + OLD_STATEMENT + " REAL DEFAULT 0, "
                 + "FOREIGN KEY (" + ID_USER
@@ -77,6 +82,7 @@ public class DBWorker extends SQLiteOpenHelper {
     {
         SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
+        contentValues.put(ID, meter.getId());
         contentValues.put(ID_USER, user.getPassword());
         contentValues.put(NAME, meter.getName());
         contentValues.put(OLD_STATEMENT, meter.getMeter_reading());
@@ -100,6 +106,40 @@ public class DBWorker extends SQLiteOpenHelper {
         else {
             return true;
         }
+    }
+
+    public List<Meter> getAllMeter(User user)
+    {
+        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        List<Meter> meters = new ArrayList<>();
+        //падает тут
+        Cursor cursor = sqLiteDatabase
+                .query(METERS, null,
+                        COLUMN_PASSWORD + " = ?", new String[] { user.getPassword() },
+                        null, null, null);
+        cursor.moveToFirst();
+        while (cursor.isAfterLast() == false)
+        {
+            Meter meter = new Meter(cursor.getInt(0), cursor.getString(1), cursor.getString(2));
+            cursor.moveToNext();
+        }
+        cursor.close();
+        return meters;
+    }
+
+    public User getFirstUser()
+    {
+        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        Cursor cursor = sqLiteDatabase
+                .query(METERS, null,
+                        null, null,
+                        null, null, null);
+        cursor.moveToFirst();
+        User user = new User(cursor.getString(1), cursor.getString(2));
+        cursor.close();
+        return user;
     }
 
     //проверка на существование пользователя

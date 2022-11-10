@@ -99,13 +99,16 @@ public class MainFragment extends Fragment {
         initSpinner();
         initRecyclerView();
         initActivityResultLauncher();
+        DBWorker dbWorker = new DBWorker(getContext());
         if(meters != null)
         {
-            DBWorker dbWorker = new DBWorker(getContext());
             for (Meter m: meters)
             {
                 dbWorker.addMeter(user, m);
             }
+        } else
+        {
+            meters = dbWorker.getAllMeter(dbWorker.getFirstUser());
         }
         return view;
     }
