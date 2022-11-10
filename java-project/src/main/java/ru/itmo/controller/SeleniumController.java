@@ -25,6 +25,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
 
 @RestController
@@ -51,11 +52,12 @@ public class SeleniumController {
             idInputLc.clear();
             idInputLc.sendKeys(data.getAccount());
 
-            byte[] captcha = driver.findElement(By.id("m-login-meter-captcha-image"))
+            byte[] captchaBytes = driver.findElement(By.id("m-login-meter-captcha-image"))
                     .getScreenshotAs(OutputType.BYTES);
+            String captcha = Base64.getEncoder().encodeToString(captchaBytes);
             //для теста
 //            BufferedImage img = ImageIO.read(new ByteArrayInputStream(captcha));
-            return ResponseDto.builder().success(true).captcha(captcha).build();
+            return ResponseDto.builder().success(true).captchaBase64(captcha).build();
         } catch (Exception e) {
             log.error("Error: ", e);
             return ResponseDto.builder().build();

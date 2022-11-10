@@ -17,15 +17,13 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.EditText;
 import android.widget.Spinner;
 
 import com.example.mada_2.R;
 import com.example.mada_2.server_connection.service.HttpBaseSource;
-import com.example.mada_2.server_connection.service.HttpBaseSource;
 
-import java.util.BitSet;
+import java.util.Base64;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -57,7 +55,8 @@ public class authorisation extends Fragment {
             EditText password = view.findViewById(R.id.password);
             try {
                 //captch = HttpBaseSource.Companion.getClient().authorizeAsync(password.getText().toString(), area.getSelectedItem().toString()).get().getCaptcha();
-                byte[] b = HttpBaseSource.Companion.getClient().authorizeAsync("3403454", "Выксунский р-н").get().getCaptcha();
+                String bb = HttpBaseSource.Companion.getClient().authorizeAsync("3403454", "Выксунский р-н").get().getCaptchaBase64();
+                byte[] b = Base64.getDecoder().decode(bb);
                 bitmap = BitmapFactory.decodeByteArray(b, 0, b.length);
             } catch (ExecutionException e) {
                 e.printStackTrace();
