@@ -50,7 +50,7 @@ public class MainFragment extends Fragment {
 
     public void ShowCameraActivity(int id) {
         if (hasCameraPermission()){
-            Intent intent = new Intent(getActivity(), CameraActivity.class);
+            Intent intent = new Intent(getActivity(), NewCamera.class);
             intent.putExtra("id", id);
             activityResultLauncher.launch(intent);
         } else {
