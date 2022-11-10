@@ -6,33 +6,26 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
+import androidx.camera.core.ImageCaptureException
+import androidx.camera.core.Preview
+import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.video.Recorder
 import androidx.camera.video.Recording
 import androidx.camera.video.VideoCapture
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.mada_2.databinding.ActivityNewCameraBinding
+import com.example.mada_2.server_connection.ML
+import java.text.SimpleDateFormat
+import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
-import android.widget.Toast
-import androidx.camera.lifecycle.ProcessCameraProvider
-import androidx.camera.core.Preview
-import androidx.camera.core.CameraSelector
-import android.util.Log
-import androidx.camera.core.ImageAnalysis
-import androidx.camera.core.ImageCaptureException
-import androidx.camera.core.ImageProxy
-import androidx.camera.video.FallbackStrategy
-import androidx.camera.video.MediaStoreOutputOptions
-import androidx.camera.video.Quality
-import androidx.camera.video.QualitySelector
-import androidx.camera.video.VideoRecordEvent
-import androidx.core.content.PermissionChecker
-import java.nio.ByteBuffer
-import java.text.SimpleDateFormat
-import java.util.Locale
+
 
 typealias LumaListener = (luma: Double) -> Unit
 
@@ -105,12 +98,22 @@ class NewCamera : AppCompatActivity() {
                         val msg = "Photo capture succeeded: ${output.savedUri}"
                         Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
                         Log.d(TAG, msg)
+                        val result : String = ML.getPrediction(output.savedUri)
+                        finishActivity(result)
                     }
                 }
         )
     }
 
-    private fun captureVideo() {}
+    private fun finishActivity(String result) {
+        val intent = intent
+        val id = intent.getIntExtra("id", 1)
+        intent.putExtra("meter", result)
+        intent.putExtra("id", id)
+        setResult(RESULT_OK, intent)
+        finish()
+    }
+
 
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
