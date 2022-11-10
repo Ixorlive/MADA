@@ -64,10 +64,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="0.6"
-            android:alpha="0.5"
+            android:alpha="0.7"
             android:background="@color/black" />
 
         <LinearLayout
+            android:id="@+id/ll_view7"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -78,7 +79,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1.6"
-                android:alpha="0.5"
+                android:alpha="0.7"
                 android:background="@color/black" />
             <View
                 android:id="@+id/view7"
@@ -91,7 +92,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1.6"
-                android:alpha="0.5"
+                android:alpha="0.7"
                 android:background="@color/black" />
         </LinearLayout>
 
@@ -100,7 +101,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="0.6"
-            android:alpha="0.5"
+            android:alpha="0.7"
             android:background="@color/black" />
 
     </LinearLayout>
