@@ -21,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import com.example.mada_2.MainFragment;
 import com.example.mada_2.R;
 import com.example.mada_2.dto.ResponseMeterDataDto;
 import com.example.mada_2.server_connection.service.HttpBaseSource;
@@ -56,8 +57,10 @@ public class authorisation extends Fragment {
             Bitmap bitmap = null;
             EditText password = view.findViewById(R.id.password);
             try {
-                //captch = HttpBaseSource.Companion.getClient().authorizeAsync(password.getText().toString(), area.getSelectedItem().toString()).get().getCaptcha();
-                String bb = HttpBaseSource.Companion.getClient().authorizeAsync("3403454", "Выксунский р-н").get().getCaptchaBase64();
+                String bb = HttpBaseSource.Companion.getClient()
+                        .authorizeAsync(password.getText().toString(),
+                                spinner.getSelectedItem().toString())
+                        .get().getCaptchaBase64();
                 byte[] b = Base64.getDecoder().decode(bb);
                 bitmap = BitmapFactory.decodeByteArray(b, 0, b.length);
             } catch (ExecutionException e) {
@@ -87,12 +90,23 @@ public class authorisation extends Fragment {
                     public void onClick(DialogInterface dialog, int id) {
                         String value = mEdit.getText().toString();
                         try {
-                            ResponseMeterDataDto responseMeterDataDto = HttpBaseSource.Companion.getClient().submitCaptchaAsync(value).get();
+                            ResponseMeterDataDto responseMeterDataDto =
+                                    HttpBaseSource.Companion
+                                            .getClient()
+                                            .submitCaptchaAsync(value)
+                                            .get();
                             Log.d("SubmitCaptcha", responseMeterDataDto.toString());
+                            if(responseMeterDataDto.component1())
+                            {
+                                Fragment mainFragment = new MainFragment();
+                                getActivity().getSupportFragmentManager()
+                                        .beginTransaction()
+                                        .add(R.id.fragment_container, mainFragment)
+                                        .commit();
+                            }
                         } catch (ExecutionException | InterruptedException e) {
                             e.printStackTrace();
                         }
-                        // sign in the user ...
                     }
                 })
                 .setNegativeButton("cancel", new DialogInterface.OnClickListener() {

@@ -39,9 +39,6 @@ public class MainActivity extends AppCompatActivity {
         Fragment auth = new authorisation(dist);
         getSupportFragmentManager().beginTransaction().add(R.id.fragment_container,
                 auth).commit();
-//        Fragment main_camera = new authorisation();
-//        getSupportFragmentManager().beginTransaction().add(R.id.fragment_container,
-//                main_camera).commit();
     }
 
 }
