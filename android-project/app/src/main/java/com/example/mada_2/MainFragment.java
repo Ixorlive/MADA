@@ -27,6 +27,7 @@ import com.example.mada_2.Catalog.Meter;
 import com.example.mada_2.Catalog.MeterAdapter;
 import com.example.mada_2.database.DBWorker;
 import com.example.mada_2.database.User;
+import com.example.mada_2.ui.login.authorisation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -109,12 +110,18 @@ public class MainFragment extends Fragment {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String person_account = parent.getItemAtPosition(position).toString(); //selected item
                 if (!person_account.isEmpty()) {
-                    current_user = new User(person_account, "doesn't matter");
-                    List<Meter> meters_list_new = dbWorker.getAllMeter(current_user);
-                    MeterAdapter adapter = (MeterAdapter) recyclerView.getAdapter();
-                    assert adapter != null;
-                    adapter.updateAllData(meters_list_new);
-
+                    if (person_account.equals("Добавить")) {
+                        Fragment main = new authorisation();
+                        requireActivity().getSupportFragmentManager().beginTransaction().add(R.id.fragment_container,
+                                main).commit();
+                    }
+                    else {
+                        current_user = new User(person_account, "doesn't matter");
+                        List<Meter> meters_list_new = dbWorker.getAllMeter(current_user);
+                        MeterAdapter adapter = (MeterAdapter) recyclerView.getAdapter();
+                        assert adapter != null;
+                        adapter.updateAllData(meters_list_new);
+                    }
                 }
             }
 

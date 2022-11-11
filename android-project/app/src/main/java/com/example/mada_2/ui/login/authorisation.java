@@ -135,7 +135,7 @@ public class authorisation extends Fragment {
             dbWorker.addUser(user);
             int id = 1;
             for (String meter_str : meters) {
-                dbWorker.addMeter(user, new Meter(id, meter_str, "500"));
+                dbWorker.addMeter(user, new Meter(id, meter_str, "0"));
                 id++;
             }
         }
