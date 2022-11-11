@@ -2,6 +2,8 @@ package com.example.mada_2;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -9,6 +11,7 @@ import android.os.Bundle;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -63,6 +66,14 @@ public class MainFragment extends Fragment {
         activityResultLauncher.launch(intent);
     }
 
+    public boolean checkCorrection(Meter meter, CharSequence new_data) {
+        if (new_data.toString().isEmpty()) return false;
+        double current_reading = Double.parseDouble(dbWorker.getMeterById(current_user, meter.id).meter_reading);
+        double new_reading = Double.parseDouble(new_data.toString());
+
+        return new_reading > current_reading;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,8 +88,12 @@ public class MainFragment extends Fragment {
         sendButton = view.findViewById(R.id.btn_send);
         progressBar = view.findViewById(R.id.progressBar);
         sendButton.setOnClickListener((View v) -> {
-            startProgressBar();
-            (new Handler()).postDelayed(this::dataSent, 1500);
+            if (!checkNewMeters()) {
+                Dialog d = createDialog();
+                d.show();
+            } else {
+                sendData();
+            }
             // TODO: send data;
         });
         dbWorker = new DBWorker(getContext());
@@ -89,6 +104,11 @@ public class MainFragment extends Fragment {
         initRecyclerView();
         initActivityResultLauncher();
         return view;
+    }
+
+    private void sendData() {
+        startProgressBar();
+        (new Handler()).postDelayed(this::dataSent, 1500);
     }
 
     private void initSpinner() {
@@ -142,12 +162,37 @@ public class MainFragment extends Fragment {
     }
 
     private void dataSent() {
-        // TODO: show fragment or text
         progressBar.setVisibility(View.INVISIBLE);
         sendButton.setText("Отправлено!");
     }
 
+    private boolean checkNewMeters() {
+        MeterAdapter adapter = (MeterAdapter) recyclerView.getAdapter();
+        List<Meter> new_meters = adapter.getItems();
+        for (Meter meter : new_meters) {
+            if (!checkCorrection(meter, meter.meter_reading)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     private void startProgressBar() {
         progressBar.setVisibility(View.VISIBLE);
+    }
+
+    private Dialog createDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
+        builder.setMessage(R.string.string_warning_wrong_readings)
+                .setPositiveButton("Ок", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        sendData();
+                    }
+                })
+                .setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                    }
+                });
+        return builder.create();
     }
 }

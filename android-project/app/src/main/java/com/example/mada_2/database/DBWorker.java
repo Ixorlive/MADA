@@ -111,10 +111,23 @@ public class DBWorker extends SQLiteOpenHelper {
         }
     }
 
+    public Meter getMeterById(User user, int id) {
+        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
+        Cursor cursor = sqLiteDatabase
+                .query(METERS, null,
+                        ID_USER + " = ? and " + ID + " = ?", new String[] { user.getPassword(), String.valueOf(id) },
+                        null, null, null);
+        cursor.moveToFirst();
+        Meter m = new Meter(cursor.getInt(1),
+                cursor.getString(2),
+                cursor.getString(3));
+        cursor.close();
+        return m;
+    }
+
     public List<Meter> getAllMeter(User user)
     {
         SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
         List<Meter> meters = new ArrayList<>();
         Cursor cursor = sqLiteDatabase
                 .query(METERS, null,
@@ -123,7 +136,7 @@ public class DBWorker extends SQLiteOpenHelper {
         cursor.moveToFirst();
         while (cursor.isAfterLast() == false)
         {
-            Meter meter = new Meter(cursor.getInt(1),
+            Meter meter = new Meter(cursor.getInt(0),
                     cursor.getString(2),
                     cursor.getString(3));
             meters.add(meter);

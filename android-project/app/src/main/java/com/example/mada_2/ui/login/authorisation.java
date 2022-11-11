@@ -139,11 +139,11 @@ public class authorisation extends Fragment {
 
     public void insertDataToDB(User user, List<String> meters) {
         DBWorker dbWorker = new DBWorker(getContext());
-        if (dbWorker.isUserExists(user)) {
+        if (!dbWorker.isUserExists(user)) {
             dbWorker.addUser(user);
             int id = 1;
             for (String meter_str : meters) {
-                dbWorker.addMeter(user, new Meter(id, meter_str, "0"));
+                dbWorker.addMeter(user, new Meter(id, meter_str, "500"));
                 id++;
             }
         }
