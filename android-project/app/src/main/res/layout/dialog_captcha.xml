@@ -10,7 +10,8 @@
         android:layout_height="64dp"
         android:background="#FFFFBB33"
         android:contentDescription="@string/app_name"
-        android:scaleType="center" />
+        android:scaleType="fitXY"
+        android:adjustViewBounds="true"/>
 
     <EditText
         android:id="@+id/text_captcha"
