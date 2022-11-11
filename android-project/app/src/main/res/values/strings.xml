@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">mada_2</string>
     <!-- TODO: Remove or change this placeholder text -->
@@ -17,4 +18,6 @@
     <string name="action_sign_in">Войти</string>
     <string name="welcome_text">Приветствуем Вас в приложении MADA!</string>
     <string name="select_area">Выберите территорию:</string>
+    <string name="string_warning_wrong_readings">Некоторые данные заполнены некорректны, отправить корректно заполненные данные. Некорректные данные отпарвляться не будут</string>
+
 </resources>

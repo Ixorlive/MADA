@@ -97,7 +97,9 @@ public class SeleniumController {
                     .map(el -> el.getText().replace("Счетчик ", ""))
                     .toList();
             List<String> textWithDate = Arrays.stream(driver.findElements(By.tagName("i"))
-                    .get(5)
+                    .stream()
+                    .filter(str -> str.getText().contains("определены сроки передачи данных "))
+                    .toList().get(0)
                     .getText()
                     .split("период с | по | число"))
                     .toList();

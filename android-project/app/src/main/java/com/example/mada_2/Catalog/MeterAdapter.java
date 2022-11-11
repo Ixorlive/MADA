@@ -17,9 +17,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.mada_2.R;
 import com.example.mada_2.MainFragment;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import static com.google.android.material.color.MaterialColors.getColor;
 
 public class MeterAdapter extends RecyclerView.Adapter<MeterAdapter.MeterVH> {
 
@@ -31,7 +30,7 @@ public class MeterAdapter extends RecyclerView.Adapter<MeterAdapter.MeterVH> {
 
     public MeterAdapter(MainFragment current_fragment, List<Meter> groupList) {
         this.fragment = current_fragment;
-        this.Meters = groupList;
+        this.Meters = new ArrayList<>(groupList);
     }
 
     @NonNull
@@ -50,7 +49,10 @@ public class MeterAdapter extends RecyclerView.Adapter<MeterAdapter.MeterVH> {
 
     @Override
     public int getItemCount() {
-        return Meters.size();
+        if (Meters != null)
+            return Meters.size();
+        else
+            return 0;
     }
 
     public void updateAllData(List<Meter> viewModels) {
@@ -68,7 +70,11 @@ public class MeterAdapter extends RecyclerView.Adapter<MeterAdapter.MeterVH> {
         notifyDataSetChanged();
     }
 
-    class MeterVH extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public List<Meter> getItems() {
+        return Meters;
+    }
+
+    class MeterVH extends RecyclerView.ViewHolder {
 
         TextView meter_title;
         EditText editText;
@@ -82,38 +88,34 @@ public class MeterAdapter extends RecyclerView.Adapter<MeterAdapter.MeterVH> {
             editText = itemView.findViewById(R.id.text_meter_reading);
             btn_camera = itemView.findViewById(R.id.btn_camera);
             img_warning = itemView.findViewById(R.id.img_warning);
-            editText.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    // TODO: check correction of input
-                    if (s.length() <= 6) {
-                        img_warning.setVisibility(View.VISIBLE);
-                    } else {
-                        img_warning.setVisibility(View.INVISIBLE);
-                    }
-                }
-
-                @Override
-                public void afterTextChanged(Editable s) {}
-            });
-            itemView.setOnClickListener(this);
         }
         @SuppressLint({"ResourceAsColor", "RestrictedApi", "ResourceType"})
         void bindTo(Meter currentMeter) {
             meter_title.setText(currentMeter.name);
             editText.setText(currentMeter.meter_reading);
 
+            editText.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                    if (fragment.checkCorrection(currentMeter, s)) {
+                        currentMeter.meter_reading = s.toString();
+                        img_warning.setVisibility(View.INVISIBLE);
+                    } else {
+                        img_warning.setVisibility(View.VISIBLE);
+                    }
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {}
+            });
+
             btn_camera.setOnClickListener((View view) -> {
                 fragment.ShowCameraActivity(currentMeter.id);
             });
-        }
-
-        @Override
-        public void onClick(View v) {
-            // No action to click
         }
     }
 }
