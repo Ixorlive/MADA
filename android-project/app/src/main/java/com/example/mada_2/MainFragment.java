@@ -41,41 +41,26 @@ import java.util.Set;
 
 public class MainFragment extends Fragment {
 
-    private static final String[] CAMERA_PERMISSION = new String[]{Manifest.permission.CAMERA};
-    private static final int CAMERA_REQUEST_CODE = 10;
-
     ActivityResultLauncher<Intent> activityResultLauncher;
     private Spinner accounts_list;
     RecyclerView recyclerView;
     ProgressBar progressBar;
     Button sendButton;
-    Server server;
-    List<Meter> meters = null;
-    User user = null;
+    DBWorker dbWorker;
+    User current_user; // current personal account
 
     public MainFragment() {
         // Required empty public constructor
     }
 
-    public MainFragment(List<String> list, User user) {
-        int i = 1;
-        meters = new ArrayList<>();
-        for(String l: list)
-        {
-            meters.add(new Meter(i, l, "0"));
-            i++;
-        }
-        this.user = user;
+    public MainFragment(User curr_user) {
+        current_user = curr_user;
     }
 
     public void ShowCameraActivity(int id) {
-        if (hasCameraPermission()){
-            Intent intent = new Intent(getActivity(), NewCamera.class);
-            intent.putExtra("id", id);
-            activityResultLauncher.launch(intent);
-        } else {
-            requestPermission();
-        }
+        Intent intent = new Intent(getActivity(), NewCamera.class);
+        intent.putExtra("id", id);
+        activityResultLauncher.launch(intent);
     }
 
     @Override
@@ -96,17 +81,9 @@ public class MainFragment extends Fragment {
             (new Handler()).postDelayed(this::dataSent, 1500);
             // TODO: send data;
         });
-        DBWorker dbWorker = new DBWorker(getContext());
-        if(meters != null)
-        {
-            for (Meter m: meters)
-            {
-                dbWorker.addMeter(user, m);
-            }
-        } else
-        {
-            user = dbWorker.getFirstUser();
-            meters = dbWorker.getAllMeter(user);
+        dbWorker = new DBWorker(getContext());
+        if (current_user == null) {
+            current_user = dbWorker.getFirstUser();
         }
         initSpinner();
         initRecyclerView();
@@ -115,7 +92,7 @@ public class MainFragment extends Fragment {
     }
 
     private void initSpinner() {
-        DBWorker dbWorker = new DBWorker(getContext());
+        //DBWorker dbWorker = new DBWorker(getContext());
         List<String> allUser = dbWorker.getPasswordAllUser();
         allUser.add("Добавить");
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this.getContext(),
@@ -124,12 +101,15 @@ public class MainFragment extends Fragment {
         accounts_list.setAdapter(adapter);
         accounts_list.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                //TODO: create database ?
-//                String person_account = parent.getItemAtPosition(position).toString(); //selected item
-//                List<Meter> meters_list_new = server.getMeters(person_account, "123");
-//                MeterAdapter adapter = (MeterAdapter) recyclerView.getAdapter();
-//                assert adapter != null;
-//                adapter.updateAllData(meters_list_new);
+                String person_account = parent.getItemAtPosition(position).toString(); //selected item
+                if (!person_account.isEmpty()) {
+                    current_user = new User(person_account, "doesn't matter");
+                    List<Meter> meters_list_new = dbWorker.getAllMeter(current_user);
+                    MeterAdapter adapter = (MeterAdapter) recyclerView.getAdapter();
+                    assert adapter != null;
+                    adapter.updateAllData(meters_list_new);
+
+                }
             }
 
             public void onNothingSelected(AdapterView<?> parent) {
@@ -139,8 +119,8 @@ public class MainFragment extends Fragment {
     }
 
     private void initRecyclerView() {
-        DBWorker dbWorker = new DBWorker(getContext());
-        MeterAdapter groupAdapter = new MeterAdapter(this, dbWorker.getAllMeter(user));
+        //DBWorker dbWorker = new DBWorker(getContext());
+        MeterAdapter groupAdapter = new MeterAdapter(this, dbWorker.getAllMeter(current_user));
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(groupAdapter);
     }
@@ -159,21 +139,6 @@ public class MainFragment extends Fragment {
                         adapter.updateData(id, decimals);
                     }
                 });
-    }
-
-    private boolean hasCameraPermission() {
-        return ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.CAMERA
-        ) == PackageManager.PERMISSION_GRANTED;
-    }
-
-    private void requestPermission() {
-        ActivityCompat.requestPermissions(
-                requireActivity(),
-                CAMERA_PERMISSION,
-                CAMERA_REQUEST_CODE
-        );
     }
 
     private void dataSent() {

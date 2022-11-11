@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // Создание БД
-        DBWorker dataBaseWorker = new DBWorker(MainActivity.this);
+        DBWorker dataBaseWorker = new DBWorker(getBaseContext());
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);

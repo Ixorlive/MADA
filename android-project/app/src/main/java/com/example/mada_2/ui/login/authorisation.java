@@ -23,6 +23,7 @@ import android.widget.ImageView;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import com.example.mada_2.Catalog.Meter;
 import com.example.mada_2.MainFragment;
 import com.example.mada_2.R;
 import com.example.mada_2.database.DBWorker;
@@ -30,9 +31,11 @@ import com.example.mada_2.database.User;
 import com.example.mada_2.dto.ResponseMeterDataDto;
 import com.example.mada_2.server_connection.service.HttpBaseSource;
 
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
@@ -48,7 +51,7 @@ public class authorisation extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_authorisation, container, false);
         Spinner spinner = view.findViewById(R.id.area);
-        List<String> dist = null;
+        List<String> dist = new ArrayList<>();
         try {
             dist = HttpBaseSource.Companion
                     .getClient()
@@ -59,6 +62,7 @@ public class authorisation extends Fragment {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        dist.add("test");
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this.getContext(),
                 android.R.layout.simple_list_item_1, dist);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -111,11 +115,10 @@ public class authorisation extends Fragment {
                             Log.d("SubmitCaptcha", responseMeterDataDto.toString());
                             if(responseMeterDataDto.component1())
                             {
-                                DBWorker dbWorker = new DBWorker(getContext());
-                                dbWorker.addUser(user);
-                                saveAccount(user.getPassword());
-                                Fragment mainFragment = new MainFragment(responseMeterDataDto.getMeters(), user);
-                                getActivity().getSupportFragmentManager()
+                                insertDataToDB(user, responseMeterDataDto.getMeters());
+                                //Fragment mainFragment = new MainFragment(responseMeterDataDto.getMeters(), user);
+                                Fragment mainFragment = new MainFragment(user);
+                                requireActivity().getSupportFragmentManager()
                                         .beginTransaction()
                                         .add(R.id.fragment_container, mainFragment)
                                         .commit();
@@ -134,14 +137,15 @@ public class authorisation extends Fragment {
         return builder.create();
     }
 
-    public void saveAccount(String account) {
-        SharedPreferences getPrefs = PreferenceManager
-                .getDefaultSharedPreferences(this.getContext());
-        Set<String> personal_accounts = getPrefs.getStringSet("Accounts", new HashSet<>());
-        Set<String> arr_accounts = new HashSet<>();//new HashSet<>(personal_accounts);
-        arr_accounts.add(account);
-        SharedPreferences.Editor editor = getPrefs.edit();
-        editor.putStringSet("Accounts", arr_accounts);
-        editor.apply();
+    public void insertDataToDB(User user, List<String> meters) {
+        DBWorker dbWorker = new DBWorker(getContext());
+        if (dbWorker.isUserExists(user)) {
+            dbWorker.addUser(user);
+            int id = 1;
+            for (String meter_str : meters) {
+                dbWorker.addMeter(user, new Meter(id, meter_str, "0"));
+                id++;
+            }
+        }
     }
 }
