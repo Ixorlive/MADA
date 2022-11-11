@@ -62,7 +62,7 @@ public class MainFragment extends Fragment {
         meters = new ArrayList<>();
         for(String l: list)
         {
-            meters.add(new Meter(i, l, ""));
+            meters.add(new Meter(i, l, "0"));
             i++;
         }
         this.user = user;
@@ -96,9 +96,6 @@ public class MainFragment extends Fragment {
             (new Handler()).postDelayed(this::dataSent, 1500);
             // TODO: send data;
         });
-        initSpinner();
-        initRecyclerView();
-        initActivityResultLauncher();
         DBWorker dbWorker = new DBWorker(getContext());
         if(meters != null)
         {
@@ -108,8 +105,12 @@ public class MainFragment extends Fragment {
             }
         } else
         {
-            meters = dbWorker.getAllMeter(dbWorker.getFirstUser());
+            user = dbWorker.getFirstUser();
+            meters = dbWorker.getAllMeter(user);
         }
+        initSpinner();
+        initRecyclerView();
+        initActivityResultLauncher();
         return view;
     }
 
@@ -138,10 +139,8 @@ public class MainFragment extends Fragment {
     }
 
     private void initRecyclerView() {
-        server = new ServerMock();
-        // TODO: get from local data ?
-//        List<Meter> meters_list = server.getMeters("123456", "Выксунский район");
-        MeterAdapter groupAdapter = new MeterAdapter(this, meters);
+        DBWorker dbWorker = new DBWorker(getContext());
+        MeterAdapter groupAdapter = new MeterAdapter(this, dbWorker.getAllMeter(user));
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(groupAdapter);
     }

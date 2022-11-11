@@ -3,6 +3,7 @@ package com.example.mada_2.database;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -86,12 +87,14 @@ public class DBWorker extends SQLiteOpenHelper {
         contentValues.put(ID_USER, user.getPassword());
         contentValues.put(NAME, meter.getName());
         contentValues.put(OLD_STATEMENT, meter.getMeter_reading());
-        if(sqLiteDatabase.insert(METERS, null, contentValues) == -1) {
+        try {
+            sqLiteDatabase.insertOrThrow(METERS, null, contentValues);
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
             return false;
         }
-        else {
-            return true;
-        }
+        return true;
     }
 
     //обновление счетчика
@@ -115,12 +118,15 @@ public class DBWorker extends SQLiteOpenHelper {
         List<Meter> meters = new ArrayList<>();
         Cursor cursor = sqLiteDatabase
                 .query(METERS, null,
-                        "'" + COLUMN_PASSWORD + "'" + " = ?", new String[] { user.getPassword() },
+                        ID_USER + " = ?", new String[] { user.getPassword() },
                         null, null, null);
         cursor.moveToFirst();
         while (cursor.isAfterLast() == false)
         {
-            Meter meter = new Meter(cursor.getInt(0), cursor.getString(1), cursor.getString(2));
+            Meter meter = new Meter(cursor.getInt(1),
+                    cursor.getString(2),
+                    cursor.getString(3));
+            meters.add(meter);
             cursor.moveToNext();
         }
         cursor.close();
