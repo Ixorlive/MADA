@@ -14,6 +14,8 @@
 
 ### ML-server
 
+Описано [здесь](https://github.com/Ixorlive/MADA/tree/main/python-project).
+
 ### Установка на android
 
 Для установки на android требуется собрать .apk из проекта, предварительно указав ip Java-server и  ML-server, который находится в папке android-project с помощью Gradle, установить полученное приложение на телефон и предоставить ему доступ к камере и локальному хранилищу.
