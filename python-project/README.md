@@ -9,7 +9,7 @@
 
 ```shell
 conda env create -f environment.yml
-conda activate MADA-recognition
+conda activate mada-recognition
 ```
 
 2) Установить дополнительные пакеты pip (не получилось устанавливать
