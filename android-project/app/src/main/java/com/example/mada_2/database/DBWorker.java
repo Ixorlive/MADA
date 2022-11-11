@@ -113,7 +113,6 @@ public class DBWorker extends SQLiteOpenHelper {
         SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         List<Meter> meters = new ArrayList<>();
-        //падает тут
         Cursor cursor = sqLiteDatabase
                 .query(METERS, null,
                         "'" + COLUMN_PASSWORD + "'" + " = ?", new String[] { user.getPassword() },
@@ -140,6 +139,25 @@ public class DBWorker extends SQLiteOpenHelper {
         User user = new User(cursor.getString(1), cursor.getString(2));
         cursor.close();
         return user;
+    }
+
+    public List<String> getPasswordAllUser()
+    {
+        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        List<String> strings = new ArrayList<>();
+        Cursor cursor = sqLiteDatabase
+                .query(USERS, new String[]{COLUMN_PASSWORD},
+                        null, null,
+                        null, null, null);
+        cursor.moveToFirst();
+        while (cursor.isAfterLast() == false)
+        {
+            strings.add(cursor.getString(0));
+            cursor.moveToNext();
+        }
+        cursor.close();
+        return strings;
     }
 
     //проверка на существование пользователя

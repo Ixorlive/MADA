@@ -114,17 +114,11 @@ public class MainFragment extends Fragment {
     }
 
     private void initSpinner() {
-        SharedPreferences getPrefs = PreferenceManager
-                .getDefaultSharedPreferences(this.getContext());
-        Set<String> personal_accounts = getPrefs.getStringSet("Accounts", new HashSet<>());
-        String[] strings = new String[personal_accounts.size() + 1];
-        int index = 0;
-        for (String str : personal_accounts) {
-            strings[index++] = str;
-        }
-        strings[index] = "Добавить";
+        DBWorker dbWorker = new DBWorker(getContext());
+        List<String> allUser = dbWorker.getPasswordAllUser();
+        allUser.add("Добавить");
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this.getContext(),
-                android.R.layout.simple_list_item_1, strings);
+                android.R.layout.simple_list_item_1, allUser);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         accounts_list.setAdapter(adapter);
         accounts_list.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
