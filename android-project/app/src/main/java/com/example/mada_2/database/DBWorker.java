@@ -149,7 +149,6 @@ public class DBWorker extends SQLiteOpenHelper {
     public User getFirstUser()
     {
         SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
         Cursor cursor = sqLiteDatabase
                 .query(METERS, null,
                         null, null,
@@ -163,7 +162,6 @@ public class DBWorker extends SQLiteOpenHelper {
     public List<String> getPasswordAllUser()
     {
         SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
         List<String> strings = new ArrayList<>();
         Cursor cursor = sqLiteDatabase
                 .query(USERS, new String[]{COLUMN_PASSWORD},

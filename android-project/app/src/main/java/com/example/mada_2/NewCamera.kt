@@ -66,7 +66,6 @@ class NewCamera : AppCompatActivity() {
 
         // Set up the listeners for take photo and video capture buttons
         viewBinding.imageCaptureButton.setOnClickListener { takePhoto() }
-        //viewBinding.videoCaptureButton.setOnClickListener { captureVideo() }
 
         cameraExecutor = Executors.newSingleThreadExecutor()
     }
@@ -94,7 +93,6 @@ class NewCamera : AppCompatActivity() {
                         contentValues)
                 .build()
         val activity = this
-        //ImageCapture.OutputFileOptions.Builder(File("/image.jpg")).build()
 
         // Set up image capture listener, which is triggered after photo has
         // been taken
@@ -112,7 +110,6 @@ class NewCamera : AppCompatActivity() {
                         Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
                         Log.d(TAG, msg)
                         Log.d("MLDebug", "before ML")
-                        //val result : String = ML().getPrediction(name, activity) //output.savedUri!!)
                         getPrediction(name)
                         Log.d("MLDebug", "after ML")
                         //finishActivity(result)
@@ -143,7 +140,6 @@ class NewCamera : AppCompatActivity() {
                     .build()
                     .also {
                         it.setSurfaceProvider(viewBinding.viewFinder.surfaceProvider)
-                        //it.setSurfaceProvider(findViewById<androidx.camera.view.PreviewView>(R.id.viewFinder).surfaceProvider)
                     }
 
             imageCapture = ImageCapture.Builder().build()
@@ -207,11 +203,6 @@ class NewCamera : AppCompatActivity() {
             )
             false
         }
-        /*}
-        else { //permission is automatically granted on sdk<23 upon installation
-            Log.v("PhotoDebug","Permission is granted");
-            return true;
-        }*/
     }
 
     fun isReadStoragePermissionGranted(): Boolean {
@@ -230,11 +221,6 @@ class NewCamera : AppCompatActivity() {
             )
             false
         }
-        /*}
-        else { //permission is automatically granted on sdk<23 upon installation
-            Log.v("PhotoDebug","Permission is granted");
-            return true;
-        }*/
     }
 
     fun isCameraPermissionGranted(): Boolean {
@@ -249,11 +235,6 @@ class NewCamera : AppCompatActivity() {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), 1)
             false
         }
-        /*}
-        else { //permission is automatically granted on sdk<23 upon installation
-            Log.v("PhotoDebug","Permission is granted");
-            return true;
-        }*/
     }
 
     companion object {
@@ -278,10 +259,8 @@ class NewCamera : AppCompatActivity() {
         Log.d("MLDebug", "in getPrediction: 1")
         val mediaType: MediaType = "text/plain".toMediaType()
         Log.d("MLDebug", "in getPrediction: 2")
-        //val data = File(imageUri.path!!)
         val data = File(Environment.getExternalStorageDirectory().absoluteFile,
-                "Pictures/CameraX-Image/" + name + ".jpg");
-        //val data = File("/storage/emulated/0/Pictures/CameraX-Image/1.jpg")
+                "Pictures/CameraX-Image/" + name + ".jpg")
 
         Log.d("MLDebug", "in getPrediction: 2.5")
         val body: RequestBody = MultipartBody.Builder().setType(MultipartBody.FORM)
@@ -301,7 +280,6 @@ class NewCamera : AppCompatActivity() {
                 .method("POST", body)
                 .build()
         Log.d("MLDebug", "in getPrediction: 4")
-        //val response = client.newCall(request).execute()
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 Log.d("MLDebug", "Exception: " + e)

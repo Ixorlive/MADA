@@ -20,8 +20,6 @@ import com.example.mada_2.MainFragment;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.google.android.material.color.MaterialColors.getColor;
-
 public class MeterAdapter extends RecyclerView.Adapter<MeterAdapter.MeterVH> {
 
     MainFragment fragment;
@@ -102,7 +100,7 @@ public class MeterAdapter extends RecyclerView.Adapter<MeterAdapter.MeterVH> {
 
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    // TODO: check correction of input
+
                     if (fragment.checkCorrection(currentMeter, s)) {
                         currentMeter.meter_reading = s.toString();
                         img_warning.setVisibility(View.INVISIBLE);

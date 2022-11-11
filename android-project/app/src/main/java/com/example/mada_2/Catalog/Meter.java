@@ -19,10 +19,6 @@ public class Meter {
         return meter_reading;
     }
 
-    public void setMeter_reading(String meter_reading) {
-        this.meter_reading = meter_reading;
-    }
-
     public String meter_reading = "0";
 
     public String name;

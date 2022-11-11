@@ -8,11 +8,9 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,10 +31,7 @@ import com.example.mada_2.server_connection.service.HttpBaseSource;
 
 import java.util.ArrayList;
 import java.util.Base64;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 public class authorisation extends Fragment {
@@ -62,7 +57,6 @@ public class authorisation extends Fragment {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        dist.add("test");
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this.getContext(),
                 android.R.layout.simple_list_item_1, dist);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -72,8 +66,7 @@ public class authorisation extends Fragment {
             Bitmap bitmap = null;
             EditText password = view.findViewById(R.id.password);
             try {
-//                user = new User(password.getText().toString(), spinner.getSelectedItem().toString());
-                user = new User("3403454", "Выксунский р-н");
+                user = new User(password.getText().toString(), spinner.getSelectedItem().toString());
                 String bb = HttpBaseSource.Companion.getClient()
                         .authorizeAsync(user.getPassword(),
                                 user.getDistrict())
@@ -116,7 +109,6 @@ public class authorisation extends Fragment {
                             if(responseMeterDataDto.component1())
                             {
                                 insertDataToDB(user, responseMeterDataDto.getMeters());
-                                //Fragment mainFragment = new MainFragment(responseMeterDataDto.getMeters(), user);
                                 Fragment mainFragment = new MainFragment(user);
                                 requireActivity().getSupportFragmentManager()
                                         .beginTransaction()
