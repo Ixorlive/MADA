@@ -92,7 +92,7 @@ public class MeterAdapter extends RecyclerView.Adapter<MeterAdapter.MeterVH> {
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
                     // TODO: check correction of input
-                    if (s.length() <= 6) {
+                    if (s.length() < 1) {
                         img_warning.setVisibility(View.VISIBLE);
                     } else {
                         img_warning.setVisibility(View.INVISIBLE);
