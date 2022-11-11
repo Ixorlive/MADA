@@ -28,6 +28,7 @@ import com.example.mada_2.Catalog.MeterAdapter;
 import com.example.mada_2.database.DBWorker;
 import com.example.mada_2.database.User;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainFragment extends Fragment {
@@ -76,12 +77,7 @@ public class MainFragment extends Fragment {
         sendButton = view.findViewById(R.id.btn_send);
         progressBar = view.findViewById(R.id.progressBar);
         sendButton.setOnClickListener((View v) -> {
-            if (!checkNewMeters()) {
-                Dialog d = createDialog();
-                d.show();
-            } else {
-                sendData();
-            }
+            checkNewMeters();
         });
         dbWorker = new DBWorker(getContext());
         if (current_user == null) {
@@ -93,13 +89,16 @@ public class MainFragment extends Fragment {
         return view;
     }
 
-    private void sendData() {
+    private void sendData(List<Meter> okList) {
         startProgressBar();
+        for(Meter m: okList)
+        {
+            dbWorker.updateMeter(current_user, m);
+        }
         (new Handler()).postDelayed(this::dataSent, 1500);
     }
 
     private void initSpinner() {
-        //DBWorker dbWorker = new DBWorker(getContext());
         List<String> allUser = dbWorker.getPasswordAllUser();
         allUser.add("Добавить");
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this.getContext(),
@@ -126,7 +125,6 @@ public class MainFragment extends Fragment {
     }
 
     private void initRecyclerView() {
-        //DBWorker dbWorker = new DBWorker(getContext());
         MeterAdapter groupAdapter = new MeterAdapter(this, dbWorker.getAllMeter(current_user));
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(groupAdapter);
@@ -153,27 +151,33 @@ public class MainFragment extends Fragment {
         sendButton.setText("Отправлено!");
     }
 
-    private boolean checkNewMeters() {
+    private void checkNewMeters() {
         MeterAdapter adapter = (MeterAdapter) recyclerView.getAdapter();
         List<Meter> new_meters = adapter.getItems();
+        List<Meter> ok = new ArrayList<>();
         for (Meter meter : new_meters) {
-            if (!checkCorrection(meter, meter.meter_reading)) {
-                return false;
+            if (checkCorrection(meter, meter.meter_reading)) {
+                ok.add(meter);
             }
         }
-        return true;
+        if (ok.size() != new_meters.size()) {
+            Dialog d = createDialog(ok);
+            d.show();
+        } else {
+            sendData(ok);
+        }
     }
 
     private void startProgressBar() {
         progressBar.setVisibility(View.VISIBLE);
     }
 
-    private Dialog createDialog() {
+    private Dialog createDialog(List<Meter> ok) {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
         builder.setMessage(R.string.string_warning_wrong_readings)
                 .setPositiveButton("Ок", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        sendData();
+                        sendData(ok);
                     }
                 })
                 .setNegativeButton("Отмена", new DialogInterface.OnClickListener() {

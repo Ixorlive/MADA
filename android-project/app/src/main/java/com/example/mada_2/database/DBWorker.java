@@ -103,7 +103,8 @@ public class DBWorker extends SQLiteOpenHelper {
         SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(OLD_STATEMENT, meter.getMeter_reading());
-        if(sqLiteDatabase.update(METERS, contentValues, ID_USER + " = ?", new String[] {user.getPassword()}) == -1) {
+        if(sqLiteDatabase.update(METERS, contentValues,
+                ID_USER + " = ? AND " + ID + " = ?", new String[] {user.getPassword(), String.valueOf(meter.getId())}) == -1) {
             return false;
         }
         else {
