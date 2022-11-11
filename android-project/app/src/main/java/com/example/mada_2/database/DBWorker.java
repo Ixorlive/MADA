@@ -116,7 +116,7 @@ public class DBWorker extends SQLiteOpenHelper {
         //падает тут
         Cursor cursor = sqLiteDatabase
                 .query(METERS, null,
-                        COLUMN_PASSWORD + " = ?", new String[] { user.getPassword() },
+                        "'" + COLUMN_PASSWORD + "'" + " = ?", new String[] { user.getPassword() },
                         null, null, null);
         cursor.moveToFirst();
         while (cursor.isAfterLast() == false)
@@ -148,7 +148,7 @@ public class DBWorker extends SQLiteOpenHelper {
         SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
         Cursor cursor = sqLiteDatabase
                 .query(USERS, null,
-                        COLUMN_PASSWORD + " = ?", new String[] { user.getPassword() },
+                        "'" + COLUMN_PASSWORD + "'" + " = ?", new String[] { user.getPassword() },
                         null, null, null);
         if(!Integer.valueOf(cursor.getCount()).equals(0))
         {
